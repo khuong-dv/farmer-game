@@ -1,18 +1,20 @@
 # Brainstorm Overview
 
-Last updated: 2026-05-08
+Last updated: 2026-05-15
 
 ## Sessions
 
 | #  | Date       | Topic              | Status | Spec |
 |----|------------|--------------------|--------|------|
-| 01 | 2026-05-08 | project-skeleton   | active | -    |
+| 01 | 2026-05-08 | project-skeleton   | spec-created | 001-project-skeleton |
+| 02 | 2026-05-15 | crop-system-mvp    | active | - |
 
 ## Open Threads
 
-- Initial placeholder asset: include a single logo PNG, or rely on text-only for the smoke scene? (from #01)
-- ESLint strictness level beyond the recommended preset (e.g., enable `@typescript-eslint/no-floating-promises`)? (from #01)
-- Whether the CI workflow file should also run on a `master` push vs. PR-only (from #01)
+- Should watering be included in MVP, or simplify to auto-water? (from #02)
+- Growth time for crop: 3 days, 5 days, or configurable? (from #02)
+- How does player end the day? Button, dialog, or automatic? (from #02)
+- How to handle save schema migration when adding crop fields? (from #02)
 
 ## Parked Ideas
 
