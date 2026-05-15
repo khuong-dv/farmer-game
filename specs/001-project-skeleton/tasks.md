@@ -25,18 +25,18 @@ Single project layout (per plan.md). All paths are relative to the repo root `/h
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Initialize the npm project and install every dependency the rest of the phases need. After this phase, `npm install` on a clean clone succeeds and the dependency tree is locked.
+**Purpose**: Initialize the bun project and install every dependency the rest of the phases need. After this phase, `bun install` on a clean clone succeeds and the dependency tree is locked (committed `bun.lock`).
 
-- [X] T001 Initialize npm project at repo root — create `package.json` (name `farmer-game`, `"type": "module"`, `"private": true`)
-- [X] T002 Install runtime dependencies: `npm install phaser zod`
-- [X] T003 Install dev dependencies: `npm install -D typescript vite vitest jsdom @types/node eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier prettier husky lint-staged`
+- [X] T001 Initialize bun project at repo root — create `package.json` (name `farmer-game`, `"type": "module"`, `"private": true`)
+- [X] T002 Install runtime dependencies: `bun add phaser zod`
+- [X] T003 Install dev dependencies: `bun add -d typescript vite vitest jsdom @types/node eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier prettier husky lint-staged`
 - [X] T004 [P] Extend `.gitignore` with Node + Vite patterns: `node_modules/`, `dist/`, `*.log`, `.env*`, `coverage/`, `.DS_Store`
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Wiring every story depends on — strict TypeScript config, build/test tool configs, the layer-based `src/` tree (FR-013), and the npm script surface listed in `quickstart.md`.
+**Purpose**: Wiring every story depends on — strict TypeScript config, build/test tool configs, the layer-based `src/` tree (FR-013), and the package.json script surface listed in `quickstart.md` (invoked via `bun run …`).
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
@@ -44,17 +44,17 @@ Single project layout (per plan.md). All paths are relative to the repo root `/h
 - [X] T006 [P] Create `vite.config.ts` — minimal config exporting `defineConfig({})` (Vite picks up `index.html` at root)
 - [X] T007 [P] Create `vitest.config.ts` — set `test.environment = "jsdom"`, `test.globals = true`, `test.include = ["tests/**/*.test.ts"]`
 - [X] T008 [P] Create empty layer directories under `src/` with `.gitkeep` files (FR-013): `src/scenes/.gitkeep`, `src/systems/.gitkeep`, `src/entities/.gitkeep`, `src/ui/.gitkeep`, `src/state/.gitkeep`, `src/data/.gitkeep`, `src/types/.gitkeep`, `src/utils/.gitkeep`
-- [X] T009 Add npm scripts to `package.json`: `"dev": "vite"`, `"build": "vite build"`, `"test": "vitest run"`, `"typecheck": "tsc --noEmit"`, `"lint": "eslint ."`, `"prepare": "husky"` (the lint script will error until US3 ships the eslint config — expected)
+- [X] T009 Add scripts to `package.json`: `"dev": "vite"`, `"build": "vite build"`, `"test": "vitest run"`, `"typecheck": "tsc --noEmit"`, `"lint": "eslint ."`, `"prepare": "husky"` (invoked as `bun run <name>`; the lint script will error until US3 ships the eslint config — expected)
 
-**Checkpoint**: `npm install` succeeds, `npm run typecheck` exits 0 on the empty tree, and the layer dirs survive a fresh checkout.
+**Checkpoint**: `bun install` succeeds, `bun run typecheck` exits 0 on the empty tree, and the layer dirs survive a fresh checkout.
 
 ---
 
 ## Phase 3: User Story 1 — Engine-alive smoke scene (Priority: P1) 🎯 MVP
 
-**Goal**: A developer can run `npm run dev`, open the printed URL, and see a Phaser scene rendering an engine-alive indicator + live FPS counter; HMR works; `npm run build` produces a working bundle that renders the same scene.
+**Goal**: A developer can run `bun run dev`, open the printed URL, and see a Phaser scene rendering an engine-alive indicator + live FPS counter; HMR works; `bun run build` produces a working bundle that renders the same scene.
 
-**Independent Test**: From a clean clone, run `npm install && npm run dev`. The served URL renders the smoke scene. Edit `MainScene.ts`, save, and confirm HMR. Then `npm run build && npx http-server dist` renders the same scene from the built bundle. *(spec.md US1 Acceptance Scenarios 1–3, SC-001, SC-007)*
+**Independent Test**: From a clean clone, run `bun install && bun run dev`. The served URL renders the smoke scene. Edit `MainScene.ts`, save, and confirm HMR. Then `bun run build && bunx http-server dist` renders the same scene from the built bundle. *(spec.md US1 Acceptance Scenarios 1–3, SC-001, SC-007)*
 
 ### Implementation for User Story 1
 
@@ -88,7 +88,7 @@ Single project layout (per plan.md). All paths are relative to the repo root `/h
 - [X] T019 [US2] Wire SaveSystem into `src/main.ts` — before constructing the Phaser game, call `SaveSystem.load()` (so launch begins from restored or default state); after constructing the game, call `SaveSystem.registerAutoSave(game)` (FR-009)
 - [X] T020 [US2] In `src/main.ts`, increment `launchCount` exactly once per successful load before `registerAutoSave` runs — the field exists specifically so US2-AS3 / SC-004 have a non-static value to verify round-trip on
 
-**Checkpoint**: Both seed tests pass via `npm run test`. Browser walkthrough in `quickstart.md` US2 succeeds end-to-end.
+**Checkpoint**: Both seed tests pass via `bun run test`. Browser walkthrough in `quickstart.md` US2 succeeds end-to-end.
 
 ---
 
@@ -102,9 +102,9 @@ Single project layout (per plan.md). All paths are relative to the repo root `/h
 
 - [X] T021 [P] [US3] Create `.eslintrc.cjs` (or `eslint.config.js` flat config) extending `@typescript-eslint/recommended` and `prettier` (eslint-config-prettier); `parser: @typescript-eslint/parser`; `ignorePatterns: ["dist", "node_modules", ".husky"]`; root: true
 - [X] T022 [P] [US3] Create `.prettierrc` with default Prettier config (empty `{}` or minimal preferences — the brainstorm says zero-bikeshed)
-- [X] T023 [P] [US3] Create `.github/workflows/ci.yml` — single job on `push: master` and `pull_request`, steps: checkout → setup-node (LTS) → `npm ci` → `npm run typecheck` → `npm run lint` → `npm run test` → `npm run build` (FR-011)
+- [X] T023 [P] [US3] Create `.github/workflows/ci.yml` — single job on `push: master` and `pull_request`, steps: checkout → `oven-sh/setup-bun@v2` → `bun install --frozen-lockfile` → `bun run typecheck` → `bun run lint` → `bun run test` → `bun run build` (FR-011)
 - [X] T024 [US3] Add `lint-staged` config to `package.json` — staged `*.ts` files run through `tsc --noEmit` and `eslint --fix`
-- [X] T025 [US3] Create `.husky/pre-commit` hook — single line: `npx lint-staged` (requires T024). Ensure the file is executable. The `prepare` script from T009 already runs `husky` on `npm install` so the hook installs on first checkout (FR-010)
+- [X] T025 [US3] Create `.husky/pre-commit` hook — runs `bun run typecheck` (project-wide; TypeScript strict mode needs whole-program analysis) followed by `bunx lint-staged` (requires T024). Ensure the file is executable. The `prepare` script from T009 already runs `husky` on `bun install` so the hook installs on first checkout (FR-010)
 
 **Checkpoint**: All four gate commands exit 0. Pre-commit hook blocks a deliberate type error. CI green on push to `master`.
 
@@ -114,9 +114,9 @@ Single project layout (per plan.md). All paths are relative to the repo root `/h
 
 **Purpose**: Verify the full skeleton against `quickstart.md` and confirm SC-001/SC-002/SC-006/SC-007.
 
-- [ ] T026 Run the full `quickstart.md` walkthrough top-to-bottom on a clean clone — `git clone` → `npm install` → `npm run dev` (US1 scenarios) → DevTools state mutation + reload (US2 scenarios) → gate sequence (US3 scenarios). Document any drift between the quickstart and the implementation in the spec.
-- [X] T027 Time the local gate sequence: `time (npm run typecheck && npm run lint && npm run test && npm run build)` must be under 60 seconds (SC-002). If over, note the bottleneck.
-- [X] T028 Verify SC-007: add a throwaway `src/scenes/SmokeTwoScene.ts` and a throwaway `src/systems/NoopSystem.ts`, run `npm run typecheck && npm run lint && npm run build`, confirm no config files (`tsconfig.json`, `vite.config.ts`, `.eslintrc.*`, `vitest.config.ts`) needed editing. Delete the throwaway files.
+- [ ] T026 Run the full `quickstart.md` walkthrough top-to-bottom on a clean clone — `git clone` → `bun install` → `bun run dev` (US1 scenarios) → DevTools state mutation + reload (US2 scenarios) → gate sequence (US3 scenarios). Document any drift between the quickstart and the implementation in the spec.
+- [X] T027 Time the local gate sequence: `time (bun run typecheck && bun run lint && bun run test && bun run build)` must be under 60 seconds (SC-002). If over, note the bottleneck.
+- [X] T028 Verify SC-007: add a throwaway `src/scenes/SmokeTwoScene.ts` and a throwaway `src/systems/NoopSystem.ts`, run `bun run typecheck && bun run lint && bun run build`, confirm no config files (`tsconfig.json`, `vite.config.ts`, `.eslintrc.*`, `vitest.config.ts`) needed editing. Delete the throwaway files.
 
 ---
 
@@ -177,7 +177,7 @@ Task: "Wire SaveSystem.load() and registerAutoSave(game) into src/main.ts"
 ### MVP first (US1 only)
 
 1. Phase 1 → 2 → 3.
-2. Demo: `npm run dev` → engine-alive scene visible in the browser. Ship.
+2. Demo: `bun run dev` → engine-alive scene visible in the browser. Ship.
 
 ### Incremental delivery
 
@@ -198,5 +198,5 @@ Per the spec's Assumption block, this skeleton targets a solo workflow. Stories 
 - [US#] = traces task to the user story in spec.md.
 - Tests for US2 are mandated by FR-003; they are not optional in this feature.
 - US1 has no unit tests by design — per Constitution Principle II, scenes are validated by browser observation.
-- The `prepare: husky` script in T009 is what makes the pre-commit hook install on a fresh clone — without it, FR-010 silently doesn't bind.
+- The `prepare: husky` script in T009 is what makes the pre-commit hook install on a fresh clone (`bun install` triggers it) — without it, FR-010 silently doesn't bind.
 - Auto-save trigger in v1 is scene transition only (Boot → Main fires on every launch). Future features can add additional trigger points without changing SaveSystem's contract.

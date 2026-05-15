@@ -88,7 +88,7 @@ branch (or simulate CI locally) and confirm CI fails.
 - **Local browser storage unavailable or quota-exceeded**: the save attempt MUST fail safely (no crash, no swallowed exception trail in production), and the game MUST continue running using in-memory state for the rest of the session.
 - **Save payload corrupted or shape-invalid**: discarded; default state used; no surfaced error blocks gameplay.
 - **Future, unknown save schema version**: rejected via the migration code path (even though no real migration exists yet) so adding migrations later is purely additive.
-- **Empty repository on first install**: `npm install` followed by the dev command MUST succeed without any manual setup steps beyond what is documented in the project README, if any.
+- **Empty repository on first install**: `bun install` followed by the dev command MUST succeed without any manual setup steps beyond what is documented in the project README, if any.
 - **Developer attempts to bypass pre-commit hook**: bypass is technically possible (e.g., `--no-verify`) but the constitution forbids it; the hook itself does not need to be unbypassable.
 
 ## Requirements *(mandatory)*
@@ -136,5 +136,5 @@ branch (or simulate CI locally) and confirm CI fails.
 - CI runs on both pushes to `master` and on pull requests; this is the conservative default and matches Constitution Principle III's "automation enforces the gate" intent.
 - A single save slot is sufficient for v1; multi-slot save management is explicitly out of scope.
 - The auto-save trigger for v1 is scene transition; in-game time events (e.g., end-of-day) will be added when the corresponding feature lands.
-- `npm` is the package manager (per constitution); the lockfile is committed.
+- `bun` is the package manager (per constitution v1.1.0); the lockfile (`bun.lock`) is committed.
 - The repository targets a solo-developer workflow; no review, branch protection, or code-owners configuration is part of this skeleton.
