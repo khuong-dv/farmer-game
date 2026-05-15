@@ -110,15 +110,15 @@ The end-to-end loop for any non-trivial change:
 2. **Specify → Plan → Tasks** — generated artifacts live under `specs/<branch>/`.
 3. **Implement** — execute via `/speckit-implement` or task-by-task; commit on green gates only.
 4. **Quality gates (local, before each commit):**
-   - `tsc --noEmit` passes
-   - `eslint` passes
-   - `vite build` passes
-   - Relevant unit tests pass (pure-logic modules)
+    - `tsc --noEmit` passes
+    - `eslint` passes
+    - `vite build` passes
+    - Relevant unit tests pass (pure-logic modules)
 5. **Playtest gate (before marking the feature task complete):**
-   - `npm run dev` running
-   - Golden path exercised in-browser
-   - Edge cases the spec called out exercised
-   - One short note in the spec or task list confirming what was tested
+    - `npm run dev` running
+    - Golden path exercised in-browser
+    - Edge cases the spec called out exercised
+    - One short note in the spec or task list confirming what was tested
 6. **Commit & merge** — small, focused commits; merge to `main` only after gates 4 + 5 pass.
 
 **Spec drift:** If reality diverges from the spec mid-implementation, STOP and run `/speckit-spex-evolve`.
@@ -131,9 +131,9 @@ This constitution is **guidance optimized for a single developer**, not a compli
 - The constitution supersedes ad-hoc preferences when they conflict.
 - Amendments are made by editing this file and running `/speckit-constitution`, which auto-bumps the version
   per semver:
-  - **MAJOR** — a principle is removed or fundamentally redefined (backward-incompatible).
-  - **MINOR** — a new principle/section is added or an existing one is materially expanded.
-  - **PATCH** — wording cleanups, typo fixes, non-semantic refinements.
+    - **MAJOR** — a principle is removed or fundamentally redefined (backward-incompatible).
+    - **MINOR** — a new principle/section is added or an existing one is materially expanded.
+    - **PATCH** — wording cleanups, typo fixes, non-semantic refinements.
 - **Deviations are allowed** when justified in writing — in the relevant spec, plan, or commit message
   (a single sentence is enough). Repeated deviations from the same rule are a signal to amend the rule,
   not to keep deviating.
