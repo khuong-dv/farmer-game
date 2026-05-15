@@ -1,21 +1,24 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: (uninitialized template) → 1.0.0
-Bump rationale: Initial ratification — first concrete content replaces placeholder template (MAJOR per semver for 0→1 baseline).
+Version change: 1.0.0 → 1.1.0 → 1.2.0 → 1.1.0 (revert v1.2.0 vite-plus)
+Bump rationale: v1.2.0 added vite-plus requirement; reverted due to implementation not using it and user opting not to adopt.
 
-Modified principles:
-  - [PRINCIPLE_1_NAME] → I. Spec-Driven Development
-  - [PRINCIPLE_2_NAME] → II. Iterative Playtesting
-  - [PRINCIPLE_3_NAME] → III. Type Safety & Quality Gates
-  - Principles 4 & 5 from template → REMOVED (project elected 3-principle minimal set)
+Modified sections (v1.1.0 retained):
+  - Tech Stack & Browser Targets — Package manager: npm → bun (lockfile committed)
+  - Principle II. Iterative Playtesting — example command updated (npm run dev → bun run dev)
+  - Development Workflow — playtest gate command updated (npm run dev → bun run dev)
 
-Added sections:
-  - Tech Stack & Browser Targets (replaces [SECTION_2_NAME])
-  - Development Workflow (replaces [SECTION_3_NAME])
+Reverted (v1.2.0 undone):
+  - Tech Stack "Build / Dev server": vite-plus → Vite (standard)
+  - Principle III and Development Workflow: bunx vite-plus build → bun run build
+  - "Forbidden without amendment" — "changing build tool" restored (but bun is still locked)
 
-Removed sections:
-  - Two trailing principle slots (template had 5; project uses 3)
+Rationale for bun adoption (recorded per Governance "Deviations" rule):
+  - Significantly faster install + script execution on a solo-dev loop, shortening the gate sequence (supports SC-002 <60s).
+  - Single-binary toolchain reduces moving parts; works as a drop-in for `package.json` scripts and respects the committed lockfile invariant.
+  - Phaser + Vite + TS + Vitest stack is bun-compatible; CI uses oven-sh/setup-bun@v2 with --frozen-lockfile.
+  - Tradeoff accepted: smaller ecosystem maturity than npm; revisit if a critical dependency regresses on bun.
 
 Templates checked:
   - .specify/templates/plan-template.md       ✅ aligned (Constitution Check is parametric — gates derived from this file)
@@ -53,7 +56,7 @@ before the implementing task is marked complete. Automated unit tests cover pure
 (state machines, economy, save/load, pathfinding); they do NOT replace the playtest gate.
 
 **Rules:**
-- A feature is not "done" until the user has run `npm run dev` and exercised the golden path in-browser.
+- A feature is not "done" until the user has run `bun run dev` and exercised the golden path in-browser.
 - Pure-logic modules (no DOM/Phaser scene access) MUST have unit tests; gameplay scenes are exempt.
 - TDD is encouraged but NOT mandatory — pre-writing tests for visual/feel-driven code is wasted effort
   and is explicitly rejected here.
@@ -74,7 +77,7 @@ on a feature branch). The toolchain — not human discipline — enforces this.
   be narrowed within the same module.
 - Run-time validation (e.g., `zod` or hand-rolled guards) MUST wrap any data crossing a system boundary:
   `localStorage` saves, JSON imports, network responses, URL params.
-- Pre-commit / pre-PR gates: `tsc --noEmit` clean, `eslint` clean, `vite build` succeeds.
+- Pre-commit / pre-PR gates: `tsc --noEmit` clean, `eslint` clean, `bun run build` succeeds.
   A failing gate blocks commit; bypassing with `--no-verify` is forbidden without a recorded reason.
 
 **Rationale:** Solo dev means no second pair of eyes. The compiler and linter are the second pair of eyes.
@@ -86,7 +89,7 @@ A gate that's "usually run" is a gate that's never run; automation makes the rul
 - **Language:** TypeScript (strict mode)
 - **Engine:** Phaser 3 (latest stable major)
 - **Build / Dev server:** Vite (latest stable major)
-- **Package manager:** npm (lockfile committed)
+- **Package manager:** bun (lockfile committed; `bun.lock`) — exclusive to npm/pnpm/yarn
 
 **Supported browsers** (golden-path testing target):
 - Latest 2 stable releases of Chrome, Firefox, Safari, Edge — desktop.
@@ -99,7 +102,7 @@ A gate that's "usually run" is a gate that's never run; automation makes the rul
 - `dist/` — build output, gitignored.
 
 **Forbidden without amendment:** introducing a second framework (React, Vue), swapping engines (Pixi, Three),
-or changing the build tool. Adding a typed library (e.g., `zod`, `nanoid`) does NOT require an amendment.
+or changing the build tool (Vite locked). Adding a typed library (e.g., `zod`, `nanoid`) does NOT require an amendment.
 
 ## Development Workflow
 
@@ -110,15 +113,15 @@ The end-to-end loop for any non-trivial change:
 2. **Specify → Plan → Tasks** — generated artifacts live under `specs/<branch>/`.
 3. **Implement** — execute via `/speckit-implement` or task-by-task; commit on green gates only.
 4. **Quality gates (local, before each commit):**
-    - `tsc --noEmit` passes
-    - `eslint` passes
-    - `vite build` passes
-    - Relevant unit tests pass (pure-logic modules)
+   - `tsc --noEmit` passes
+   - `eslint` passes
+   - `bun run build` passes
+   - Relevant unit tests pass (pure-logic modules)
 5. **Playtest gate (before marking the feature task complete):**
-    - `npm run dev` running
-    - Golden path exercised in-browser
-    - Edge cases the spec called out exercised
-    - One short note in the spec or task list confirming what was tested
+   - `bun run dev` running
+   - Golden path exercised in-browser
+   - Edge cases the spec called out exercised
+   - One short note in the spec or task list confirming what was tested
 6. **Commit & merge** — small, focused commits; merge to `main` only after gates 4 + 5 pass.
 
 **Spec drift:** If reality diverges from the spec mid-implementation, STOP and run `/speckit-spex-evolve`.
@@ -131,9 +134,9 @@ This constitution is **guidance optimized for a single developer**, not a compli
 - The constitution supersedes ad-hoc preferences when they conflict.
 - Amendments are made by editing this file and running `/speckit-constitution`, which auto-bumps the version
   per semver:
-    - **MAJOR** — a principle is removed or fundamentally redefined (backward-incompatible).
-    - **MINOR** — a new principle/section is added or an existing one is materially expanded.
-    - **PATCH** — wording cleanups, typo fixes, non-semantic refinements.
+  - **MAJOR** — a principle is removed or fundamentally redefined (backward-incompatible).
+  - **MINOR** — a new principle/section is added or an existing one is materially expanded.
+  - **PATCH** — wording cleanups, typo fixes, non-semantic refinements.
 - **Deviations are allowed** when justified in writing — in the relevant spec, plan, or commit message
   (a single sentence is enough). Repeated deviations from the same rule are a signal to amend the rule,
   not to keep deviating.
@@ -141,4 +144,4 @@ This constitution is **guidance optimized for a single developer**, not a compli
 - Plans MUST run a Constitution Check before tasks are generated; violations either get justified
   (in the plan's Complexity Tracking section) or get fixed before proceeding.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-08 | **Last Amended**: 2026-05-08
+**Version**: 1.1.0 | **Ratified**: 2026-05-08 | **Last Amended**: 2026-05-15
