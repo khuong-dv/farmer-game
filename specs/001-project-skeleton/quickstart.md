@@ -8,7 +8,7 @@ The developer experience this skeleton must deliver. Every step here maps to an 
 
 ## Prerequisites
 
-- Node.js (current LTS) and `npm` available on `PATH`.
+- [`bun`](https://bun.sh) (latest stable) available on `PATH`. Bun ships its own runtime; a separate Node.js install is not required for `bun run` scripts.
 - A current-generation desktop browser (Chrome / Firefox / Safari / Edge, latest 2 stable).
 
 That's the whole list. No global tools.
@@ -18,30 +18,30 @@ That's the whole list. No global tools.
 ```bash
 git clone <repo-url> farmer-game
 cd farmer-game
-npm install
+bun install
 ```
 
-`npm install` MUST run the husky pre-commit installation as a `prepare` script, so hooks are live immediately.
+`bun install` MUST run the husky pre-commit installation as a `prepare` script, so hooks are live immediately.
 
 ## Daily loop
 
 ```bash
-npm run dev            # Starts Vite. Open the printed URL.
-npm run typecheck      # tsc --noEmit
-npm run lint           # eslint .
-npm run test           # vitest run
-npm run build          # vite build → dist/
+bun run dev            # Starts Vite. Open the printed URL.
+bun run typecheck      # tsc --noEmit
+bun run lint           # eslint .
+bun run test           # vitest run
+bun run build          # vite build → dist/
 ```
 
 ## Acceptance walkthrough (maps directly to spec)
 
 ### US1 — Engine-alive smoke scene
 
-1. `npm run dev` → open the printed local URL.
+1. `bun run dev` → open the printed local URL.
 2. **Verify**: a Phaser scene renders the text `🌾 Farmer Game — engine alive` and an FPS counter that updates each frame. *(US1 Acceptance Scenario 1)*
 3. Edit the smoke text in `src/scenes/MainScene.ts`, save the file.
 4. **Verify**: the browser reflects the change without a manual rebuild (Vite HMR). *(US1 Acceptance Scenario 2)*
-5. `npm run build`, then serve `dist/` (e.g. `npx http-server dist`) and open it in a browser.
+5. `bun run build`, then serve `dist/` (e.g. `bunx http-server dist`) and open it in a browser.
 6. **Verify**: the same smoke scene renders from the built bundle. *(US1 Acceptance Scenario 3)*
 
 ### US2 — Persistent state via auto-save
@@ -56,7 +56,7 @@ npm run build          # vite build → dist/
 
 ### US3 — Quality gates
 
-1. Run `npm run typecheck && npm run lint && npm run test && npm run build`. *(US3 Acceptance Scenario 1 + SC-002: full sequence under 60s)*
+1. Run `bun run typecheck && bun run lint && bun run test && bun run build`. *(US3 Acceptance Scenario 1 + SC-002: full sequence under 60s)*
 2. **Verify**: all four exit zero. The full wall time should be well under 60 seconds.
 3. Introduce a deliberate type error (e.g. assign a `string` to a `number` field). Stage and `git commit`.
 4. **Verify**: the pre-commit hook fails the commit with a typecheck error. *(US3 Acceptance Scenario 2 + SC-003)*

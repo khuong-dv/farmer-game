@@ -72,7 +72,7 @@ The constitution and the brainstorm pre-decided most of the choices that would o
 | Lint | `eslint` + `@typescript-eslint/recommended` + `eslint-config-prettier` | Recommended preset matches the spec's Assumption ("standard recommended preset"). `eslint-config-prettier` disables conflicts with Prettier. Extra strictness rules (e.g., `no-floating-promises`) deferred per the brainstorm's open question. |
 | Format | Prettier (default config) | Zero-bikeshed. Prettier defaults are fine for a solo dev. |
 | Test runner | Vitest + `jsdom` environment | Vitest is Vite-native (shared config, fast watch mode). `jsdom` is needed because the save schema touches `localStorage`. Jest would also work but requires its own config and a separate transformer for TS. |
-| CI | Single GitHub Actions job: `npm ci → tsc --noEmit → eslint → vitest run → vite build` | Linear pipeline mirrors the local gate sequence so failures are reproducible. Matrix builds across Node versions are out of scope for v1 (solo dev, single supported Node major). |
+| CI | Single GitHub Actions job: `bun install --frozen-lockfile → tsc --noEmit → eslint → vitest run → vite build` | Linear pipeline mirrors the local gate sequence so failures are reproducible. Matrix builds across runtime versions are out of scope for v1 (solo dev, single supported bun major). |
 | Pre-commit gates | `tsc --noEmit` + `eslint` on staged files via `lint-staged` | Tests + full build are too slow for pre-commit. CI owns the full sequence. This matches FR-010 (typecheck + lint at minimum). |
 
 ---

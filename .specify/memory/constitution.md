@@ -1,21 +1,22 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: (uninitialized template) → 1.0.0
-Bump rationale: Initial ratification — first concrete content replaces placeholder template (MAJOR per semver for 0→1 baseline).
+Version change: 1.1.0 → 1.2.0
+Bump rationale: MINOR — Tech Stack "Build / Dev server" materially changed (vite → vite-plus). This is a fork/extension of Vite that the project has adopted.
 
-Modified principles:
-  - [PRINCIPLE_1_NAME] → I. Spec-Driven Development
-  - [PRINCIPLE_2_NAME] → II. Iterative Playtesting
-  - [PRINCIPLE_3_NAME] → III. Type Safety & Quality Gates
-  - Principles 4 & 5 from template → REMOVED (project elected 3-principle minimal set)
+Modified sections:
+  - Tech Stack & Browser Targets — Build / Dev server: Vite → vite-plus from https://github.com/voidzero-dev/vite-plus
+  - Principle III. Type Safety & Quality Gates — pre-commit gate command updated (vite build → bunx vite-plus build)
+  - Development Workflow — quality gate command updated (vite build → bunx vite-plus build)
 
-Added sections:
-  - Tech Stack & Browser Targets (replaces [SECTION_2_NAME])
-  - Development Workflow (replaces [SECTION_3_NAME])
+Rationale for vite-plus adoption (recorded per Governance "Deviations" rule):
+  - vite-plus extends standard Vite with additional optimizations and tooling suited to this project's workflow.
+  - Maintains Vite compatibility; existing Vite configuration patterns remain valid.
+  - Forked source is actively maintained and versioned.
+  - Tradeoff accepted: external dependency with its own release cadence; monitor for upstream compatibility.
 
-Removed sections:
-  - Two trailing principle slots (template had 5; project uses 3)
+Previous amendment (1.1.0 rationale retained for historical context):
+  - Tech Stack "Package manager" changed (npm → bun). Single-binary toolchain reduces moving parts; respects committed lockfile invariant.
 
 Templates checked:
   - .specify/templates/plan-template.md       ✅ aligned (Constitution Check is parametric — gates derived from this file)
@@ -53,7 +54,7 @@ before the implementing task is marked complete. Automated unit tests cover pure
 (state machines, economy, save/load, pathfinding); they do NOT replace the playtest gate.
 
 **Rules:**
-- A feature is not "done" until the user has run `npm run dev` and exercised the golden path in-browser.
+- A feature is not "done" until the user has run `bun run dev` and exercised the golden path in-browser.
 - Pure-logic modules (no DOM/Phaser scene access) MUST have unit tests; gameplay scenes are exempt.
 - TDD is encouraged but NOT mandatory — pre-writing tests for visual/feel-driven code is wasted effort
   and is explicitly rejected here.
@@ -74,7 +75,7 @@ on a feature branch). The toolchain — not human discipline — enforces this.
   be narrowed within the same module.
 - Run-time validation (e.g., `zod` or hand-rolled guards) MUST wrap any data crossing a system boundary:
   `localStorage` saves, JSON imports, network responses, URL params.
-- Pre-commit / pre-PR gates: `tsc --noEmit` clean, `eslint` clean, `vite build` succeeds.
+- Pre-commit / pre-PR gates: `tsc --noEmit` clean, `eslint` clean, `bunx vite-plus build` succeeds.
   A failing gate blocks commit; bypassing with `--no-verify` is forbidden without a recorded reason.
 
 **Rationale:** Solo dev means no second pair of eyes. The compiler and linter are the second pair of eyes.
@@ -85,8 +86,8 @@ A gate that's "usually run" is a gate that's never run; automation makes the rul
 **Fixed stack** (deviations require a constitution amendment, not a one-off override):
 - **Language:** TypeScript (strict mode)
 - **Engine:** Phaser 3 (latest stable major)
-- **Build / Dev server:** Vite (latest stable major)
-- **Package manager:** npm (lockfile committed)
+- **Build / Dev server:** vite-plus from https://github.com/voidzero-dev/vite-plus (latest stable)
+- **Package manager:** bun (lockfile committed; `bun.lock`) — exclusive to npm/pnpm/yarn
 
 **Supported browsers** (golden-path testing target):
 - Latest 2 stable releases of Chrome, Firefox, Safari, Edge — desktop.
@@ -98,8 +99,9 @@ A gate that's "usually run" is a gate that's never run; automation makes the rul
 - `specs/` — feature specifications (managed by spec-kit).
 - `dist/` — build output, gitignored.
 
-**Forbidden without amendment:** introducing a second framework (React, Vue), swapping engines (Pixi, Three),
-or changing the build tool. Adding a typed library (e.g., `zod`, `nanoid`) does NOT require an amendment.
+**Forbidden without amendment:** introducing a second framework (React, Vue), swapping engines (Pixi, Three).
+
+Adding a typed library (`zod`, `nanoid`) does NOT require an amendment.
 
 ## Development Workflow
 
@@ -112,10 +114,10 @@ The end-to-end loop for any non-trivial change:
 4. **Quality gates (local, before each commit):**
    - `tsc --noEmit` passes
    - `eslint` passes
-   - `vite build` passes
+   - `bunx vite-plus build` passes
    - Relevant unit tests pass (pure-logic modules)
 5. **Playtest gate (before marking the feature task complete):**
-   - `npm run dev` running
+   - `bun run dev` running
    - Golden path exercised in-browser
    - Edge cases the spec called out exercised
    - One short note in the spec or task list confirming what was tested
@@ -141,4 +143,4 @@ This constitution is **guidance optimized for a single developer**, not a compli
 - Plans MUST run a Constitution Check before tasks are generated; violations either get justified
   (in the plan's Complexity Tracking section) or get fixed before proceeding.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-08 | **Last Amended**: 2026-05-08
+**Version**: 1.2.0 | **Ratified**: 2026-05-08 | **Last Amended**: 2026-05-15

@@ -28,9 +28,9 @@ Gates derived from `.specify/memory/constitution.md` v1.0.0.
 | Principle | Gate | Status |
 |---|---|---|
 | I. Spec-Driven Development | This change flows through `/specify → /plan → /tasks → /implement`; spec exists at `specs/001-project-skeleton/spec.md`. | ✅ Pass |
-| II. Iterative Playtesting | User Story 1 is a browser-visible smoke scene; its acceptance scenarios require running `npm run dev` and observing the scene + FPS counter. Pure-logic modules (state store, save schema) are covered by unit tests. | ✅ Pass |
+| II. Iterative Playtesting | User Story 1 is a browser-visible smoke scene; its acceptance scenarios require running `bun run dev` and observing the scene + FPS counter. Pure-logic modules (state store, save schema) are covered by unit tests. | ✅ Pass |
 | III. Type Safety & Quality Gates | Plan adopts strict TS (FR-012), `zod` runtime validation at the `localStorage` boundary (FR-015), and pre-commit + CI gates running typecheck/lint/test/build (FR-010, FR-011). | ✅ Pass |
-| Tech Stack lock | Stack is exactly Phaser 3 + Vite + TS + npm — no deviations. Adding `zod` is permitted (typed library, no amendment required per Constitution Tech Stack section). | ✅ Pass |
+| Tech Stack lock | Stack is exactly Phaser 3 + Vite + TS + bun (per constitution v1.1.0) — no deviations. Adding `zod` is permitted (typed library, no amendment required per Constitution Tech Stack section). | ✅ Pass |
 | Repository conventions | `src/`, `public/assets/`, `specs/`, `dist/` (gitignored) all respected. | ✅ Pass |
 
 **Result**: All gates pass. No Complexity Tracking entries required.
