@@ -88,6 +88,10 @@ You **MUST** consider the user input before proceeding (if not empty). The user 
    | **Estimated tasks** | ~{N} tasks |
    | **Risk** | Low / Medium / High |
 
+   ## Classification Result
+
+   **Complexity**: small | medium | large
+
    ## Recommendation
 
    → Use **`/speckit-tiny-specify`** — this is a small, well-scoped change.
@@ -100,6 +104,8 @@ You **MUST** consider the user input before proceeding (if not empty). The user 
 
    → Use **`/speckit-spex-brainstorm`** → **`/speckit-specify`** — complex or unclear scope, start with brainstorming.
    ```
+
+   Note: The `**Complexity**` field in the Classification Result section is machine-readable for downstream commands like `/speckit-specify` to auto-detect the classification when available.
 
 ## Rules
 

@@ -228,6 +228,8 @@ fi
 
 This prevents spec-kit commands in the worktree from operating on the wrong spec directory.
 
+**NOTE (2026-05-12)**: Since common.sh no longer reads feature.json, spec-kit commands in worktree will use branch-based lookup. When running skills that need the correct feature directory, explicitly provide the directory path (e.g., `/speckit-plan --specs-dir specs/PROJ-142-user-auth`).
+
 ### Step 9: Print Switch Instructions
 
 Print clear instructions for the user showing the worktree path:

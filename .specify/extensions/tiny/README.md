@@ -2,7 +2,7 @@
 
 A [Spec Kit](https://github.com/github/spec-kit) extension that adds a lightweight single-file workflow for small tasks — skip the heavy multi-step SDD process when all you need is a quick spec and implementation.
 
-> **Note**: this fork has been customized for teams using [cc-spex](https://github.com/rhuss/cc-spex) and [spec-kit-branch-convention](https://github.com/Quratulain-bilal/spec-kit-branch-convention) alongside spec-kit. See [Integration](#integration-with-cc-spex--branch-convention) for details.
+> **Note**: this fork has been customized for teams using [cc-spex](https://github.com/rhuss/cc-spex) and the enhanced [git extension](https://github.com/github/spec-kit) with configurable branch naming presets. See [Integration](#integration-with-cc-spex--git-extension) for details.
 
 ## Problem
 
@@ -48,9 +48,10 @@ Full SDD (complex features):           TinySpec (small changes):
 
 Tinyspec files live **flat in `specs/`** with a `.tiny.md` suffix (distinguishes them from full-SDD `spec.md` files in `specs/{feature}/`):
 
-- With `spec-kit-branch-convention` configured → use the configured pattern:
+- With git extension configured → use the configured pattern:
   `specs/PROJ-142-logout-button.tiny.md` (ticket preset)
-- Without branch-convention → fallback to kebab-case:
+  `specs/003-logout-button.tiny.md` (default preset)
+- Without git extension config → fallback to kebab-case:
   `specs/logout-button.tiny.md`
 
 ### The TinySpec Format
@@ -200,26 +201,29 @@ Tinyspec has quantitative and qualitative guards against scope creep:
 
 Silent scope expansion violates SDD. Stopping is the right answer.
 
-## Integration with cc-spex & branch-convention
+## Integration with cc-spex & git extension
 
-When installed alongside [cc-spex](https://github.com/rhuss/cc-spex) and/or [spec-kit-branch-convention](https://github.com/Quratulain-bilal/spec-kit-branch-convention), tinyspec detects and respects their configuration:
+When installed alongside [cc-spex](https://github.com/rhuss/cc-spex) and the enhanced git extension, tinyspec detects and respects their configuration:
 
-### Branch-convention
+### Git extension (branch naming presets)
 
-- `/speckit-tiny-specify` reads `.specify/branch-convention.yml` and applies the configured pattern to the file name (uses the same tokens: `{seq}`, `{kebab}`, `{ticket}`, `{date}`, `{type}`).
+- `/speckit-tiny-specify` reads `.specify/extensions/git/git-config.yml` and applies the configured pattern to the file name (uses the same tokens: `{seq}`, `{kebab}`, `{ticket}`, `{date}`, `{type}`).
 - Example: `ticket` preset + `PROJ-142` + `logout-button` → `specs/PROJ-142-logout-button.tiny.md`.
+- Example: `gitflow` preset + `003` + `logout-button` → `specs/003-logout-button.tiny.md`.
 - Without config, falls back to `specs/{kebab}.tiny.md`.
+
+Configure git extension presets with `/speckit-git-configure`. Available presets: default, gitflow, ticket, date, github, jira, linear, custom.
 
 ### `before_tiny` hook (custom hook system)
 
 Spec-kit core only fires standard hooks (`before_specify`, etc.) automatically. `/speckit-tiny-specify` adds its own hook dispatcher that scans `.specify/extensions/*/extension.yml` for a `hooks.before_tiny` entry and fires matching commands before file generation.
 
-Example — `spec-kit-branch-convention` registers:
+Example — `git` extension registers:
 
 ```yaml
 hooks:
   before_tiny:
-    command: speckit.branch-convention.validate
+    command: speckit.git.validate
     optional: true
     prompt: "Validate branch naming convention before creating new tinyspec?"
 ```
@@ -249,7 +253,7 @@ The extension registers an optional hook:
 
 - **Single file** — one spec file replaces three (spec.md + plan.md + tasks.md).
 - **Under 80 lines** — if the spec grows beyond 80 lines, the task is probably too complex for tinyspec.
-- **Flat storage + suffix** — `specs/{pattern}.tiny.md` unifies with full-SDD folder layout and integrates naturally with branch-convention naming.
+- **Flat storage + suffix** — `specs/{pattern}.tiny.md` unifies with full-SDD folder layout and integrates naturally with git extension naming.
 - **Concrete file references** — always lists actual files to modify, not abstract descriptions.
 - **Out of Scope as explicit boundary** — enforced, not cosmetic; violations stop execution.
 - **Scope guard** — both quantitative (5 files / 10 tasks / 2 OoS stops) and qualitative (Out of Scope).
@@ -265,7 +269,7 @@ The extension registers an optional hook:
 - Git >= 2.0.0
 
 **Recommended companions:**
-- [spec-kit-branch-convention](https://github.com/Quratulain-bilal/spec-kit-branch-convention) — for configurable naming that tinyspec picks up automatically.
+- Enhanced [git extension](https://github.com/github/spec-kit) — for configurable branch naming presets (default, gitflow, ticket, date, github, jira, linear, custom) that tinyspec picks up automatically.
 - [cc-spex](https://github.com/rhuss/cc-spex) — bundled extensions for quality gates (`spex-gates`), multi-agent review (`spex-deep-review`), worktree isolation (`spex-worktrees`), and PR collaboration (`spex-collab`).
 
 ## Related

@@ -30,6 +30,11 @@ hooks:
     optional: true
     prompt: "Check if this task is small enough for the lightweight tinyspec workflow?"
     description: "Auto-classify task complexity before starting the full SDD workflow"
+  before_tiny_specify:
+    command: speckit.tiny.classify
+    optional: true
+    prompt: "Check if this task is small enough for the lightweight tinyspec workflow?"
+    description: "Auto-classify task complexity before starting the full SDD workflow"
 
 tags:
   - "lightweight"

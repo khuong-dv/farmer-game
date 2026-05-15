@@ -1,5 +1,9 @@
 ---
 description: "Generate a single lightweight spec file with context, plan, and tasks for small changes"
+handoffs:
+  - label: Implement TinySpec
+    agent: speckit.tiny.implement
+    prompt: Implement the tinyspec. I am building with...
 ---
 
 # TinySpec
@@ -13,6 +17,40 @@ $ARGUMENTS
 ```
 
 You **MUST** consider the user input before proceeding (if not empty). The user describes the small change they want to make (e.g., "add a logout button to the navbar", "fix the date format in the invoice PDF", "add input validation to the signup form").
+
+## Pre-Execution Checks
+
+**Check for extension hooks (before tinyspec)**:
+- Check if `.specify/extensions.yml` exists in the project root.
+- If it exists, read it and look for entries under the `hooks.before_tiny_specify` key
+- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+- For each executable hook, output the following based on its `optional` flag:
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Pre-Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+  - **Mandatory hook** (`optional: false`):
+    ```
+    ## Extension Hooks
+
+    **Automatic Pre-Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+
+    Wait for the result of the hook command before proceeding to the Outline.
+    ```
+- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
 
 ## Prerequisites
 
@@ -37,13 +75,9 @@ You **MUST** consider the user input before proceeding (if not empty). The user 
 
 ## Outline
 
-1. **Hook discovery (`before_tiny` hooks)**: Since spec-kit core only fires standard hooks (`before_specify` etc.), this skill implements its own hook dispatcher for tinyspec-related hooks:
-   - Scan every `.specify/extensions/*/extension.yml` file for a `hooks.before_tiny` entry.
-   - For each match, read the hook config (`command`, `optional`, `prompt`, `description`).
-   - If `optional: true` → show the `prompt` to the user and run the hooked command only on confirmation.
-   - If `optional: false` → always run the hooked command.
-   - Fire hooks before any file generation (step 4). Failures in a non-optional hook halt the flow.
-   - Example: `spec-kit-branch-convention` declares `before_tiny → speckit.branch-convention.validate` so naming compliance is audited before a new tinyspec file is created.
+1. **Branch creation** (via hook):
+
+   If a `before_tiny_specify` hook ran successfully in the Pre-Execution Checks above, it will have created/switched to a git branch and output JSON containing `BRANCH_NAME` and `FEATURE_NUM`. Note these values for reference, but the branch name does **not** dictate the tinyspec file name.
 
 2. **Assess scope**: Quickly evaluate whether this task is appropriate for tinyspec:
    - **Good fit**: Single feature, bug fix, UI tweak, config change, small refactor — anything that touches 1-5 files and takes under ~1 hour
@@ -73,8 +107,29 @@ You **MUST** consider the user input before proceeding (if not empty). The user 
      - **Test files** that need updates.
 
 4. **Generate tinyspec file**: Create a single file at `specs/{pattern}.tiny.md` where `{pattern}` is resolved as follows:
-   - If `.specify/branch-convention.yml` exists, read it and apply the configured pattern (same tokens as `/speckit-specify`: `{seq}`, `{kebab}`, `{ticket}`, `{date}`, `{type}`). Example: `specs/PROJ-142-logout-button.tiny.md`.
-   - Otherwise, fallback to `{kebab-title}.tiny.md`. Example: `specs/logout-button.tiny.md`.
+
+   **Resolution order for `{pattern}`**:
+   1. If user explicitly provided `SPECIFY_FEATURE_DIRECTORY`, use it as-is (rare for tiny)
+   2. Otherwise, auto-generate it using `.specify/extensions/git/config.yml`:
+      - **If git-config.yml exists**: read `folder_pattern` and resolve tokens:
+        * `{seq}` - sequence number: scan `specs/` for existing directories (including `.tiny.md` files), extract max sequence number, use `max + 1`
+        * `{kebab}` - kebab-case short name (2-4 keywords, action-noun format)
+        * `{ticket}` - ticket ID: extract from user input using `ticket_pattern` regex, or prompt user if not found
+        * `{date}` - current date/time using `date_format` (default: YYYYMMDD)
+        * `{type}` - type inferred from keywords (add/implement → feat, fix/bug → fix, etc.)
+        * Apply `lowercase` and `separator` constraints from config
+        * Apply `max_length` truncation if needed
+      - **If git-config.yml does NOT exist**: fallback to `{seq}-{kebab}` pattern (sequential numbering)
+   3. Construct the file name: `{resolved-pattern}.tiny.md` (e.g., `003-logout.tiny.md`, `PROJ-142-logout.tiny.md`, `20260511-logout.tiny.md`)
+
+   For metadata fields:
+   - **Branch**: Use the current git branch name (or the new branch name if created via hook)
+   - **Ticket (Backlog)**: Extract ticket ID based on git-config.yml preset:
+     * `ticket`, `github`, `jira`, `linear` presets → extract ticket ID from branch name (e.g., `PROJ-142` from `feat/PROJ-142-logout`), or prompt user if not found
+     * Other presets (`default`, `gitflow`, `date`, `custom`) → use `N/A`
+   - **Date**: Current date in `YYYY-MM-DD` format
+   - **Status**: Always `draft` when created
+   - **Complexity**: Always `small` for tinyspec (by definition)
 
    The `.tiny.md` suffix distinguishes tinyspecs from full SDD `spec.md` files in the same `specs/` directory. Use this structure:
 
@@ -82,7 +137,7 @@ You **MUST** consider the user input before proceeding (if not empty). The user 
    # TinySpec: {Title}
 
    **Branch**: {current-branch or new-branch-name}
-   **Backlog**: {TICKET-KEY or N/A}
+   **Ticket**: {TICKET-KEY or N/A}
    **Date**: {YYYY-MM-DD}
    **Status**: draft
    **Complexity**: small
@@ -149,6 +204,37 @@ You **MUST** consider the user input before proceeding (if not empty). The user 
    - Run `/speckit-tiny-implement` to build it
    - Or implement manually — the spec is your checklist
    ```
+
+6. **Check for extension hooks**: After reporting completion, check if `.specify/extensions.yml` exists in the project root.
+   - If it exists, read it and look for entries under the `hooks.after_tiny_specify` key
+   - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
+   - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+   - For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+     - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+     - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+   - For each executable hook, output the following based on its `optional` flag:
+     - **Optional hook** (`optional: true`):
+       ```
+       ## Extension Hooks
+
+       **Optional Hook**: {extension}
+       Command: `/{command}`
+       Description: {description}
+
+       Prompt: {prompt}
+       To execute: `/{command}`
+       ```
+     - **Mandatory hook** (`optional: false`):
+       ```
+       ## Extension Hooks
+
+       **Automatic Hook**: {extension}
+       Executing: `/{command}`
+       EXECUTE_COMMAND: {command}
+       ```
+   - If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+
+**NOTE:** Branch creation is handled by the `before_tiny_specify` hook (git extension). Tinyspec file creation is always handled by this core command.
 
 ## Rules
 

@@ -1,15 +1,72 @@
 # Git Branching Workflow Extension Configuration
 # Copied to .specify/extensions/git/git-config.yml on install
 
-# Branch numbering strategy: "sequential" (001, 002, ...) or "timestamp" (YYYYMMDD-HHMMSS)
-branch_numbering: sequential
+# Branch naming strategy: preset name or "custom"
+# Available presets: default, gitflow, ticket, date, github, jira, linear, custom
+# When set to a preset, preset_* fields are ignored. For custom, use branch_pattern/folder_pattern directly.
+branch_preset: default
 
-# Commit message used by `git commit` during repository initialization
-init_commit_message: "[Spec Kit] Initial commit"
+# Branch pattern template using tokens: {seq}, {kebab}, {ticket}, {date}, {type}, {summary}
+# Example presets (do not edit when using a preset):
+#   default:     "{seq}-{kebab}"
+#   gitflow:     "{type}/{seq}-{kebab}"
+#   ticket:      "{ticket}-{kebab}"
+#   date:        "{date}-{kebab}"
+#   github:      "{type}/gh-{ticket}-{kebab}"
+#   jira:        "{type}/{ticket}-{kebab}"
+#   linear:      "{type}/lin-{ticket}-{kebab}"
+# Only used when branch_preset = "custom"
+branch_pattern: "{seq}-{kebab}"
 
-# Auto-commit before/after core commands.
-# Set "default" to enable for all commands, then override per-command.
-# Each key can be true/false. Message is customizable per-command.
+# Folder pattern template (same tokens as branch_pattern)
+# Example presets (do not edit when using a preset):
+#   default:     "{seq}-{kebab}"
+#   gitflow:     "{seq}-{kebab}"
+#   ticket:      "{ticket}-{kebab}"
+#   date:        "{date}-{kebab}"
+#   github:      "gh-{ticket}-{kebab}"
+#   jira:        "{ticket}-{kebab}"
+#   linear:      "lin-{ticket}-{kebab}"
+folder_pattern: "{seq}-{kebab}"
+
+# Sequence configuration (for {seq} token)
+seq_padding: 3
+seq_start: 1
+
+# Type prefix mapping (for {type} token)
+# Keywords in feature description are loosely matched to infer type
+type_prefix:
+  feature: "feat"
+  bugfix: "fix"
+  hotfix: "hotfix"
+  refactor: "refactor"
+  docs: "docs"
+  chore: "chore"
+  test: "test"
+default_type: "feat"
+
+# Ticket ID regex pattern (for {ticket} token)
+# Example presets (do not edit when using a preset):
+#   default:  null (no ticket)
+#   github:  "[0-9]+"
+#   jira:    "[A-Z]+-[0-9]+"
+#   linear:  "[A-Z]{3,5}-[0-9]+"
+#   azure:   "AB#[0-9]+"
+ticket_pattern: null
+
+# Date format (for {date} token)
+# Supported presets: YYYYMMDD, YYYY-MM-DD, YY-MM-DD, YYYYMMDD-HHMM
+date_format: "YYYYMMDD"
+# Custom strftime format (only used when date_format = "custom")
+date_format_custom: ""
+
+# Global constraints
+max_length: 60
+lowercase: true
+separator: "-"
+
+# Auto-commit before/after core commands
+# Set "default" to enable for all commands, then override per-command
 auto_commit:
   default: false
   before_clarify:

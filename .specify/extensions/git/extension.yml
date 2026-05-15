@@ -17,9 +17,12 @@ requires:
 
 provides:
   commands:
+    - name: speckit.git.configure
+      file: commands/speckit.git.configure.md
+      description: "Configure branch naming presets and custom patterns"
     - name: speckit.git.feature
       file: commands/speckit.git.feature.md
-      description: "Create a feature branch with sequential or timestamp numbering"
+      description: "Create a feature branch with configured naming pattern"
     - name: speckit.git.validate
       file: commands/speckit.git.validate.md
       description: "Validate current branch follows feature branch naming conventions"
@@ -40,6 +43,10 @@ provides:
       required: false
 
 hooks:
+  before_tiny_specify:
+    command: speckit.git.feature
+    optional: false
+    description: "Create feature branch before tinyspec creation"
   before_constitution:
     command: speckit.git.initialize
     optional: false
@@ -63,6 +70,11 @@ hooks:
     optional: true
     prompt: "Commit outstanding changes before task generation?"
     description: "Auto-commit before task generation"
+  before_tiny_implement:
+    command: speckit.git.commit
+    optional: true
+    prompt: "Commit outstanding changes before implementation?"
+    description: "Auto-commit before implementation"
   before_implement:
     command: speckit.git.commit
     optional: true
@@ -93,6 +105,11 @@ hooks:
     optional: true
     prompt: "Commit specification changes?"
     description: "Auto-commit after specification"
+  after_tiny_specify:
+      command: speckit.git.commit
+      optional: true
+      prompt: "Commit tiny specification changes?"
+      description: "Auto-commit after tiny specification"
   after_clarify:
     command: speckit.git.commit
     optional: true
@@ -109,6 +126,11 @@ hooks:
     prompt: "Commit task changes?"
     description: "Auto-commit after task generation"
   after_implement:
+    command: speckit.git.commit
+    optional: true
+    prompt: "Commit implementation changes?"
+    description: "Auto-commit after implementation"
+  after_tiny_implement:
     command: speckit.git.commit
     optional: true
     prompt: "Commit implementation changes?"
@@ -133,8 +155,3 @@ tags:
   - "git"
   - "branching"
   - "workflow"
-
-config:
-  defaults:
-    branch_numbering: sequential
-    init_commit_message: "[Spec Kit] Initial commit"
