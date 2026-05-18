@@ -70,6 +70,52 @@ Character (Phase 2) và UI skin (Phase 3) tách thành brainstorm riêng sau.
 - **License compliance:** Lưu file `LICENSES.md` (hoặc tương đương) ghi nguồn + license từng asset
 - **Save schema:** Không thay đổi (state vẫn là `empty/planted/growing/ready`)
 
+## Asset Specification (chi tiết cho spec phase)
+
+### Tile size mặc định
+
+**128×64 isometric diamond** (chuẩn phổ biến nhất của Kenney/0x72). Có thể override khi spec
+nếu pack đã chọn dùng size khác.
+
+### Cấu trúc file PNG cần có (tối thiểu)
+
+```
+public/assets/
+├── terrain/
+│   ├── grass.png         # 128×64 — tile cỏ làm nền
+│   └── soil.png          # 128×64 — tile đất ruộng, chỗ đặt plot
+└── crops/
+    └── rice/
+        ├── empty.png     # ~128×80 — plot trống / đất đã cày
+        ├── planted.png   # ~128×96 — vừa gieo, mầm nhỏ
+        ├── growing.png   # ~128×112 — đang lớn
+        └── ready.png     # ~128×128 — lúa chín, sẵn thu hoạch
+```
+
+**Format yêu cầu:**
+- PNG-32, alpha transparent
+- Background trong suốt (không phải nền trắng/đen)
+- Anchor point: tâm đáy của sprite (để khớp với toạ độ tile isometric)
+- Style đồng nhất: chọn 1 pack chính cho toàn bộ Phase 1, không mix nhiều pack
+
+### Tilemap (Tiled .tmx/.json)
+
+**Không cần cho Phase 1.** Grid nhỏ (ví dụ 5×5 tile cỏ + 1 ô soil đặt plot) → vẽ bằng code
+dùng công thức isometric `screenX = (col - row) * tileW/2`, `screenY = (col + row) * tileH/2`.
+Cân nhắc Tiled sau khi sang Phase mở rộng map (>50 tile, cần designer kéo thả).
+
+### Asset workflow (đã chốt)
+
+**Placeholder-first**: sinh 6 PNG placeholder isometric (diamond đơn sắc đúng size) trước,
+code render Phase 1 dựa trên đó. User thay PNG thật vào đúng path sau, không cần đụng code.
+Lợi: tách rủi ro render khỏi rủi ro asset; ai cũng có thể swap asset độc lập.
+
+### License file
+
+Tạo `public/assets/LICENSES.md` ghi với mỗi asset: tên pack, tác giả, URL nguồn, license
+(CC0/CC-BY/CC-BY-SA), attribution string nếu cần. Khi chỉ dùng placeholder tự sinh: ghi
+"Internal placeholder, no third-party license".
+
 ## Out of Scope (cho Phase 1 này)
 
 - Character sprite (nông dân đứng/đi cạnh plot) → brainstorm Phase 2
@@ -80,10 +126,11 @@ Character (Phase 2) và UI skin (Phase 3) tách thành brainstorm riêng sau.
 
 ## Open Questions
 
-- Kích thước tile chuẩn: 32×32, 64×64, hay 128×64 (isometric diamond)?
+- Kích thước tile: mặc định 128×64 (xem Asset Specification ở trên); confirm khi chọn pack thật.
 - Plot trong Phase 1 vẫn là 1 ô duy nhất, hay nền tileset chuẩn bị grid nhiều ô (chưa kích hoạt
-  gameplay nhiều plot)?
+  gameplay nhiều plot)? Nếu grid: bao nhiêu × bao nhiêu (gợi ý 5×5)?
 - Có cần pan/zoom camera không, hay cố định 1 góc nhìn?
 - Strategy depth-sort khi sau này thêm character đứng trước/sau plot?
-- Nếu mix asset từ nhiều pack (Kenney + 0x72), có rủi ro style không khớp không — có cần
-  chuẩn hoá palette/tile-size không?
+- Generator placeholder PNG dùng công cụ nào (ImageMagick / Python PIL / Node canvas)? — câu hỏi
+  triển khai, để spec/plan quyết.
+- Có cần ghi nguồn thumb.png reference vào LICENSES.md không (nó chỉ là moodboard, không ship)?
