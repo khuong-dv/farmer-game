@@ -25,7 +25,7 @@
 
 **Purpose**: Create new directories and basic structure for the feature
 
-- [ ] T001 Create directories: src/entities/plot, src/ui/hud, tests/unit/state, tests/unit/entities, tests/unit/systems, tests/integration, public/assets/crops/rice
+- [X] T001 Create directories: src/entities/plot, src/ui/hud, tests/unit/state, tests/unit/entities, tests/unit/systems, tests/integration, public/assets/crops/rice
 
 ---
 
@@ -35,10 +35,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 Extend saveSchema.ts with v2 schema including currentDay, money, plot fields in src/data/saveSchema.ts
-- [ ] T003 [P] Create cropSchema.ts with PlotState, CropType, CropStage enums and interfaces in src/data/cropSchema.ts
-- [ ] T004 Extend gameState.ts with currentDay, money, plot state fields and initial values in src/state/gameState.ts
-- [ ] T005 Add save migration function for v1 → v2 schema in src/data/saveSchema.ts
+- [X] T002 Extend saveSchema.ts with v2 schema including currentDay, money, plot fields in src/data/saveSchema.ts
+- [X] T003 [P] Create cropSchema.ts with PlotState, CropType, CropStage enums and interfaces in src/data/cropSchema.ts
+- [X] T004 Extend gameState.ts with currentDay, money, plot state fields and initial values in src/state/gameState.ts
+- [X] T005 Add save migration function for v1 → v2 schema in src/data/saveSchema.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -54,19 +54,19 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T006 [P] [US1] Unit test for Plot state machine in tests/unit/entities/plot.test.ts
-- [ ] T007 [P] [US1] Unit test for cropSystem lifecycle in tests/unit/systems/cropSystem.test.ts
-- [ ] T008 [US1] Integration test for save/load with crop state in tests/integration/saveLoad.test.ts
+- [X] T006 [P] [US1] Unit test for Plot state machine in tests/unit/entities/plot.test.ts
+- [X] T007 [P] [US1] Unit test for cropSystem lifecycle in tests/unit/systems/cropSystem.test.ts
+- [X] T008 [US1] Integration test for save/load with crop state in tests/integration/saveLoad.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Create plotTypes.ts with PlotState enum and Plot interface in src/entities/plot/plotTypes.ts
-- [ ] T010 [US1] Implement Plot class with state machine in src/entities/plot/Plot.ts (depends on T009)
-- [ ] T011 [P] [US1] Create cropSystem.ts with crop lifecycle management in src/systems/cropSystem.ts
-- [ ] T012 [P] [US1] Create placeholder sprite assets in public/assets/crops/rice/ (empty.png, planted.png, growing.png, ready.png)
-- [ ] T013 [US1] Create assetLoader.ts for loading crop sprites in src/utils/assetLoader.ts
-- [ ] T014 [P] [US1] Create Buttons.ts with Plant/Harvest button components in src/ui/hud/Buttons.ts
-- [ ] T015 [US1] Integrate Plot rendering and Plant/Harvest buttons in MainScene in src/scenes/MainScene.ts
+- [X] T009 [P] [US1] Create plotTypes.ts with PlotState enum and Plot interface in src/entities/plot/plotTypes.ts
+- [X] T010 [US1] Implement Plot class with state machine in src/entities/plot/Plot.ts (depends on T009)
+- [X] T011 [P] [US1] Create cropSystem.ts with crop lifecycle management in src/systems/cropSystem.ts
+- [X] T012 [P] [US1] Create placeholder sprite assets in public/assets/crops/rice/ (empty.svg, planted.svg, growing.svg, ready.svg)
+- [X] T013 [US1] Create assetLoader.ts for loading crop sprites in src/utils/assetLoader.ts
+- [X] T014 [P] [US1] Create Buttons.ts with Plant/Harvest button components in src/ui/hud/Buttons.ts
+- [X] T015 [US1] Integrate Plot rendering and Plant/Harvest buttons in MainScene in src/scenes/MainScene.ts
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -80,14 +80,14 @@
 
 ### Tests for User Story 2 (REQUIRED for pure-logic modules) ⚠️
 
-- [ ] T016 [P] [US2] Unit test for GameTime day progression in tests/unit/state/gameTime.test.ts
+- [X] T016 [P] [US2] Unit test for GameTime day progression in tests/unit/state/gameTime.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Implement gameTime.ts with GameTime class and day tracking in src/state/gameTime.ts
-- [ ] T018 [P] [US2] Create timeSystem.ts with sleep action handler in src/systems/timeSystem.ts
-- [ ] T019 [US2] Add Sleep button to Buttons.ts and integrate with MainScene in src/ui/hud/Buttons.ts and src/scenes/MainScene.ts
-- [ ] T020 [US2] Connect day advancement to crop growth updates in MainScene in src/scenes/MainScene.ts
+- [X] T017 [US2] Implement gameTime.ts with GameTime class and day tracking in src/state/gameTime.ts
+- [X] T018 [P] [US2] Create timeSystem.ts with sleep action handler in src/systems/timeSystem.ts
+- [X] T019 [US2] Add Sleep button to Buttons.ts and integrate with MainScene in src/ui/hud/Buttons.ts and src/scenes/MainScene.ts
+- [X] T020 [US2] Connect day advancement to crop growth updates in MainScene in src/scenes/MainScene.ts
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -101,13 +101,13 @@
 
 ### Tests for User Story 3 (REQUIRED for pure-logic modules) ⚠️
 
-- [ ] T021 [P] [US3] Unit test for economy money management in tests/unit/state/economy.test.ts
+- [X] T021 [P] [US3] Unit test for economy money management in tests/unit/state/economy.test.ts
 
 ### Implementation for User Story 3
 
-- [ ] T022 [US3] Implement economy.ts with PlayerEconomy class in src/state/economy.ts
-- [ ] T023 [P] [US3] Create HUD.ts with persistent day + money display in src/ui/hud/HUD.ts
-- [ ] T024 [US3] Connect harvest to money updates and HUD in MainScene in src/scenes/MainScene.ts
+- [X] T022 [US3] Implement economy.ts with PlayerEconomy class in src/state/economy.ts
+- [X] T023 [P] [US3] Create HUD.ts with persistent day + money display in src/ui/hud/HUD.ts
+- [X] T024 [US3] Connect harvest to money updates and HUD in MainScene in src/scenes/MainScene.ts
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -120,7 +120,7 @@
 - [ ] T025 Run browser playtest: plant → sleep 3x → harvest → verify money → plant again
 - [ ] T026 Test edge cases: plant on growing plot (should error), harvest early (should error), sleep without planting
 - [ ] T027 Test save/load with crop in growing state
-- [ ] T028 Verify quality gates: `bun run typecheck`, `bun run lint`, `bun run build`, `bun run test`
+- [X] T028 Verify quality gates: `bun run typecheck`, `bun run lint`, `bun run build`, `bun run test`
 - [ ] T029 Update CLAUDE.md agent context reference if needed
 
 ---

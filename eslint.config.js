@@ -4,7 +4,7 @@ import prettierConfig from "eslint-config-prettier";
 
 export default [
   {
-    ignores: ["dist/**", "node_modules/**", ".husky/**", "coverage/**"],
+    ignores: ["dist/**", "node_modules/**", ".husky/**", "coverage/**", ".vite/**"],
   },
   {
     files: ["**/*.ts"],

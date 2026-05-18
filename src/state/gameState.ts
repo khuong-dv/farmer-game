@@ -9,6 +9,30 @@ export type { GameState };
 export type StateListener = (state: Readonly<GameState>) => void;
 export type Unsubscribe = () => void;
 
+// Crop system convenience accessors
+export function getCurrentDay(): number {
+  return state.currentDay;
+}
+
+export function getMoney(): number {
+  return state.money;
+}
+
+export function getPlotState(): GameState["plot"] {
+  return { ...state.plot };
+}
+
+export function addMoney(amount: number): void {
+  if (amount < 0) {
+    throw new Error("Cannot add negative money");
+  }
+  setState({ money: state.money + amount });
+}
+
+export function advanceDay(): void {
+  setState({ currentDay: state.currentDay + 1 });
+}
+
 let state: GameState = defaultGameState();
 const listeners = new Set<StateListener>();
 
@@ -51,7 +75,10 @@ export function serialize(): SavePayload {
 }
 
 export function load(payload: SavePayload): void {
-  state = { ...payload.data };
+  // After migration, payload is always V2
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = payload.data as any;
+  state = { ...data };
   notify();
 }
 

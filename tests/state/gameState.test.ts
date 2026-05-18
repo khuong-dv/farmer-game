@@ -34,7 +34,13 @@ describe("gameState", () => {
     gameState.setState({ playerName: "Dave", launchCount: 3 });
     const payload = gameState.serialize();
     expect(payload.version).toBe(CURRENT_SAVE_VERSION);
-    expect(payload.data).toEqual({ playerName: "Dave", launchCount: 3 });
+    expect(payload.data).toEqual({
+      playerName: "Dave",
+      launchCount: 3,
+      currentDay: 1,
+      money: 100,
+      plot: { state: "empty", crop: null, plantedDay: null },
+    });
   });
 
   it("load(serialize()) round-trips without loss", () => {
