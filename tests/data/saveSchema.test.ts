@@ -40,10 +40,33 @@ describe("saveSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("migrate is identity for v1", () => {
+  it("migrate upgrades v1 to v2 with crop-system defaults", () => {
     const payload: SavePayload = {
       version: 1,
       data: { playerName: "Farmer", launchCount: 5 },
+    };
+    expect(migrate(payload)).toEqual({
+      version: 2,
+      data: {
+        playerName: "Farmer",
+        launchCount: 5,
+        currentDay: 1,
+        money: 100,
+        plot: { state: "empty", crop: null, plantedDay: null },
+      },
+    });
+  });
+
+  it("migrate is identity for v2", () => {
+    const payload: SavePayload = {
+      version: 2,
+      data: {
+        playerName: "Farmer",
+        launchCount: 5,
+        currentDay: 3,
+        money: 250,
+        plot: { state: "empty", crop: null, plantedDay: null },
+      },
     };
     expect(migrate(payload)).toEqual(payload);
   });
