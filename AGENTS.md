@@ -81,6 +81,27 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification — and when clarification is needed, use `AskUserQuestion` (see Section 0).
 
+## 5. Commit Convention
+
+**All commits MUST follow Angular Conventional Commits**: `type(scope): short description`
+
+- **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
+- **Scope**: optional, lowercase, in parentheses (e.g., `feat(crop): ...`)
+- **Description**: imperative mood, lowercase first letter, no trailing period, ≤ 72 chars
+- **Body** (optional): blank line after subject, wrap at 72 chars
+
+Examples:
+- ✅ `feat(crop): add rice growth lifecycle`
+- ✅ `fix(save): persist money across reloads`
+- ✅ `docs(spec): clarify harvest requirements`
+- ✅ `chore: update .gitignore`
+- ❌ `Added crop system` (no type)
+- ❌ `[Spec Kit] Add specification` (legacy format)
+- ❌ `feat: Added Crop System.` (capital + past tense + period)
+
+Enforcement: `commitlint` runs via husky `commit-msg` hook. Invalid messages are rejected.
+Speckit auto-commit messages in `.specify/extensions/git/git-config.yml` follow the same convention.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions (asked via `AskUserQuestion`) come before implementation rather than after mistakes.
